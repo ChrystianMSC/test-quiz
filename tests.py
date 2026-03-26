@@ -35,6 +35,45 @@ def test_create_choice():
     assert choice.text == 'a'
     assert not choice.is_correct
 
+@pytest.fixture
+def question_with_choices():
+    """Fixture that creates a question with multiple choices for testing."""
+    question = Question(title="Sample Question", points=10, max_selections=3)
+
+    choice1 = question.add_choice(text="First choice", is_correct=True)
+    choice2 = question.add_choice(text="Second choice", is_correct=False)
+    choice3 = question.add_choice(text="Third choice", is_correct=True)
+    choice4 = question.add_choice(text="Fourth choice", is_correct=False)
+
+    return question
+
+
+@pytest.fixture
+def empty_question():
+    """Fixture that creates a question with no choices."""
+    return Question(title="Empty Question", points=5)
+
+
+def test_set_correct_choices_with_fixture(question_with_choices):
+    correct_choice_ids = [1, 3]
+
+    question_with_choices.set_correct_choices(correct_choice_ids)
+
+    for choice in question_with_choices.choices:
+        if choice.id in correct_choice_ids:
+            assert choice.is_correct is True
+        else:
+            assert choice.is_correct is False
+
+
+def test_correct_selected_choices_with_fixture(question_with_choices):
+    selected_ids = [1, 2, 3]
+
+    result = question_with_choices.correct_selected_choices(selected_ids)
+
+    assert result == [1, 3]
+    assert len(result) == 2
+
 def test_create_question_with_valid_points_succeeds():
     title = "Valid Title"
     points = 50
